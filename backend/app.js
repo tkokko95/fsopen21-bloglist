@@ -9,7 +9,10 @@ const usersRouter = require('./controllers/users')
 const loginRouter = require('./controllers/login')
 const mongoose = require('mongoose')
 
+
 const app = express()
+app.use(cors())
+
 
 mongoose.set('useCreateIndex', true)
 
@@ -22,7 +25,7 @@ mongoose.connect(config.MONGODB_URI, { useNewUrlParser: true, useUnifiedTopology
   })
 mongoose.set('useFindAndModify', false)
 
-app.use(cors())
+
 app.use(express.json())
 app.use(middleware.tokenExtractor)
 
