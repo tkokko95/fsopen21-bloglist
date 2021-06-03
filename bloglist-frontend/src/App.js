@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react'
-//import Blog from './components/Blog'
-//import blogService from './services/blogs'
+import Blog from './components/Blog'
+import blogService from './services/blogs'
 import loginService from './services/login'
 
 const App = () => {
@@ -8,19 +8,18 @@ const App = () => {
   const [username, setUsername] = useState('')
   const [password, setPassword] = useState('')
   const [user, setUser] = useState(null)
+  const [blogs, setBlogs] = useState([])
 
   useEffect(() => {
-    console.log('mounted');
- 
-    return () => { 
-        console.log('unmounted')
-    }
- }, [])
+    blogService.getAll().then(blogs =>
+      setBlogs( blogs )
+    )  
+  }, [])
 
   const handleLogin = async (event) => {
     event.preventDefault()
     const response = await loginService.login({ username, password })
-    setUser(response.token)
+    setUser(response)
     setUsername('')
     setPassword('')
   }
@@ -54,7 +53,11 @@ const App = () => {
 
   return (
     <div>
-      logged in
+      Logged in as {user.name ? user.name : user.username}
+      <h2>blogs</h2>
+      {blogs.map(blog =>
+        <Blog key={blog.id} blog={blog} />
+      )}
     </div>
   )
 
