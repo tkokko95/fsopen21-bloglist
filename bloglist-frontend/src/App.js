@@ -7,6 +7,7 @@ const App = () => {
   //const [blogs, setBlogs] = useState([])
   const [username, setUsername] = useState('')
   const [password, setPassword] = useState('')
+  const [user, setUser] = useState(null)
 
   useEffect(() => {
     console.log('mounted');
@@ -16,13 +17,10 @@ const App = () => {
     }
  }, [])
 
-  const handleLogin = event => {
+  const handleLogin = async (event) => {
     event.preventDefault()
-    const credentials = {
-      username: username,
-      password: password
-    }
-    loginService.login(credentials)
+    const response = await loginService.login({ username, password })
+    setUser(response.token)
     setUsername('')
     setPassword('')
   }
@@ -46,12 +44,20 @@ const App = () => {
     )
   }
 
+  if (user === null) {
+    return (
+      <div>
+        <LoginForm />
+      </div>
+    )
+    }
 
   return (
     <div>
-      <LoginForm />
+      logged in
     </div>
   )
+
 }
 
 
