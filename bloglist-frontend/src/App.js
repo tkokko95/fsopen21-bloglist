@@ -4,6 +4,8 @@ import Blog from './components/Blog'
 import BlogForm from './components/BlogForm'
 import blogService from './services/blogs'
 import loginService from './services/login'
+import {Notification, ErrorMessage} from './components/Notifications'
+import './App.css'
 
 
 const App = () => {
@@ -18,6 +20,8 @@ const App = () => {
         author: '',
         url: ''
     })
+    const [notification, setNotification] = useState(null)
+    const [errorMessage, setErrorMessage] = useState(null)
 
     useEffect(() => {
         blogService.getAll().then(blogs =>
@@ -44,16 +48,24 @@ const App = () => {
 
     const handleLogin = async (event) => {
         event.preventDefault()
-        const response = await loginService.login(credentials)
-        setUser(response)
-        setCredentials({
-            username: '',
-            password: ''
-        })
-        window.localStorage.setItem('loggedUser', JSON.stringify(response))
-        blogService.setToken(response.token)
-        const fetchedBlogs = await blogService.getAll()
-        setBlogs(fetchedBlogs)
+        try {
+            const response = await loginService.login(credentials)
+            setUser(response)
+            setCredentials({
+                username: '',
+                password: ''
+            })
+            window.localStorage.setItem('loggedUser', JSON.stringify(response))
+            blogService.setToken(response.token)
+            const fetchedBlogs = await blogService.getAll()
+            setBlogs(fetchedBlogs)
+        } catch (error) {
+            setErrorMessage('Incorrect username or password')
+            setTimeout(() => {
+                setErrorMessage(null)
+            }, 5000)
+        }
+        
     }
 
     const handleLogout = () => {
@@ -72,20 +84,25 @@ const App = () => {
 
     const handleBlogSubmit = async (event) => {
         event.preventDefault()
-        const response = blogService.submitBlog(blogInfo)
+        const response = await blogService.submitBlog(blogInfo)
+        setNotification(`Added: ${blogInfo.title} by ${blogInfo.author}`)
+        setTimeout(() => {
+            setNotification(null)
+        }, 5000)
         setBlogInfo({
             title: '',
             author: '',
             url: ''
         })
         const fetchedBlogs = await blogService.getAll()
-        setBlogs(fetchedBlogs)
+        setBlogs(fetchedBlogs)   
     }
 
 
     if (user === null) {
         return (
             <div>
+                <ErrorMessage error={errorMessage} />
                 <LoginForm handleLogin={handleLogin} handleLoginFormChange={handleLoginFormChange} credentials={credentials}/>
             </div>
         )
@@ -93,9 +110,11 @@ const App = () => {
 
     return (
         <div>
+            <Notification message={notification} />
             Logged in as {user.name ? user.name : user.username}
             <br />
             <button onClick={handleLogout}>Logout</button>
+            <ErrorMessage error={errorMessage} />
             <h2>blogs</h2>
             {blogs.map(blog =>
                 <Blog key={blog.id} blog={blog} />
