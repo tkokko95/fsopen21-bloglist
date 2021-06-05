@@ -1,10 +1,11 @@
-import React, { useState, useEffect } from 'react'
+import React, { useState, useEffect, useRef} from 'react'
 import LoginForm from './components/LoginForm'
 import Blog from './components/Blog'
 import BlogForm from './components/BlogForm'
+import Togglable from './components/Togglable'
 import blogService from './services/blogs'
 import loginService from './services/login'
-import {Notification, ErrorMessage} from './components/Notifications'
+import {ErrorMessage, Notification} from './components/Notifications'
 import './App.css'
 
 
@@ -15,13 +16,10 @@ const App = () => {
     })
     const [user, setUser] = useState(null)
     const [blogs, setBlogs] = useState([])
-    const [blogInfo, setBlogInfo] = useState({
-        title: '',
-        author: '',
-        url: ''
-    })
-    const [notification, setNotification] = useState(null)
     const [errorMessage, setErrorMessage] = useState(null)
+    const [notification, setNotification] = useState(null)
+
+    const blogFormRef = useRef()
 
     useEffect(() => {
         blogService.getAll().then(blogs =>
@@ -74,59 +72,47 @@ const App = () => {
         setBlogs([])
     }
 
-    const handleBlogFormChange = (event) => {
-        const value = event.target.value
-        setBlogInfo({
-            ...blogInfo,
-            [event.target.name]: value
-        })
-    }
-
-    const handleBlogSubmit = async (event) => {
-        event.preventDefault()
-        const response = await blogService.submitBlog(blogInfo)
-        setNotification(`Added: ${blogInfo.title} by ${blogInfo.author}`)
-        setTimeout(() => {
-            setNotification(null)
-        }, 5000)
-        setBlogInfo({
-            title: '',
-            author: '',
-            url: ''
-        })
-        const fetchedBlogs = await blogService.getAll()
-        setBlogs(fetchedBlogs)   
-    }
-
-
     if (user === null) {
         return (
             <div>
-                <ErrorMessage error={errorMessage} />
-                <LoginForm handleLogin={handleLogin} handleLoginFormChange={handleLoginFormChange} credentials={credentials}/>
+                <ErrorMessage error={errorMessage}/>
+                <Togglable buttonLabel='Log in'>
+                    <LoginForm
+                        handleLogin={handleLogin} 
+                        handleLoginFormChange={handleLoginFormChange} 
+                        credentials={credentials}
+                    />
+                </Togglable>
             </div>
         )
     }
 
     return (
         <div>
-            <Notification message={notification} />
-            Logged in as {user.name ? user.name : user.username}
+            <div><Notification message={notification} />
+                Logged in as {user.name ? user.name : user.username}
+                <br />
+                <button onClick={handleLogout}>Logout</button>
+                <ErrorMessage error={errorMessage} />
+            </div>
+            <div>
+                <h2>Blogs</h2>
+                {blogs.map(blog =>
+                    <Blog key={blog.id} blog={blog} />
+                )}
+            </div>
             <br />
-            <button onClick={handleLogout}>Logout</button>
-            <ErrorMessage error={errorMessage} />
-            <h2>blogs</h2>
-            {blogs.map(blog =>
-                <Blog key={blog.id} blog={blog} />
-            )}
-            <br />
-            <BlogForm handleBlogSubmit={handleBlogSubmit} handleBlogFormChange={handleBlogFormChange} blogInfo={blogInfo}/>
+            <div>
+                <Togglable buttonLabel='Submit blog' ref={blogFormRef}>
+                    <BlogForm 
+                    setBlogs={setBlogs}
+                    blogFormRef={blogFormRef}
+                    setNotification={setNotification}/>
+                </Togglable>
+            </div>
         </div>
     )
 
 }
-
-
-
 
 export default App
