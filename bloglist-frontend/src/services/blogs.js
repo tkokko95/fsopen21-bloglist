@@ -17,9 +17,21 @@ const submitBlog = async (blogObj) => {
             Authorization: token
         }
     }
-
     const response = await axios.post(baseUrl, blogObj, cfg)
     return response.data
 }
 
-export default { getAll, submitBlog, setToken }
+const likeBlog = async (blog) => {
+    const newLikes = blog.likes + 1
+    const newBlogData = {
+        user: blog.user.id,
+        likes: newLikes,
+        author: blog.author,
+        title: blog.title,
+        url: blog.url
+    }
+    const response = await axios.put(`${baseUrl}/${blog.id}`, newBlogData)
+    return response.data
+}
+
+export default { getAll, submitBlog, setToken, likeBlog }
