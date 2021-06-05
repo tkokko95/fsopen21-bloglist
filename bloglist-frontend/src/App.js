@@ -1,84 +1,109 @@
 import React, { useState, useEffect } from 'react'
+import LoginForm from './components/LoginForm'
 import Blog from './components/Blog'
+import BlogForm from './components/BlogForm'
 import blogService from './services/blogs'
 import loginService from './services/login'
 
+
 const App = () => {
-  //const [blogs, setBlogs] = useState([])
-  const [username, setUsername] = useState('')
-  const [password, setPassword] = useState('')
-  const [user, setUser] = useState(null)
-  const [blogs, setBlogs] = useState([])
+    const [credentials, setCredentials] = useState({
+        username: '',
+        password: ''
+    })
+    const [user, setUser] = useState(null)
+    const [blogs, setBlogs] = useState([])
+    const [blogInfo, setBlogInfo] = useState({
+        title: '',
+        author: '',
+        url: ''
+    })
 
-  useEffect(() => {
-    blogService.getAll().then(blogs =>
-      setBlogs( blogs )
-    )  
-  }, [])
+    useEffect(() => {
+        blogService.getAll().then(blogs =>
+            setBlogs(blogs)
+        )
+    }, [])
 
-  useEffect(() => {
-    const loggedUserJSON = window.localStorage.getItem('loggedUser')
-    if (loggedUserJSON) {
-      const parsedUser = JSON.parse(loggedUserJSON)
-      setUser(parsedUser)
-      blogService.setToken(parsedUser.token)
+    useEffect(() => {
+        const loggedUserJSON = window.localStorage.getItem('loggedUser')
+        if (loggedUserJSON) {
+            const parsedUser = JSON.parse(loggedUserJSON)
+            setUser(parsedUser)
+            blogService.setToken(parsedUser.token)
+        }
+    }, [])
+
+    const handleLoginFormChange = (event) => {
+        const value = event.target.value
+        setCredentials({
+            ...credentials,
+            [event.target.name]: value
+        })
     }
-  }, [])
 
-  const handleLogin = async (event) => {
-    event.preventDefault()
-    const response = await loginService.login({ username, password })
-    setUser(response)
-    setUsername('')
-    setPassword('')
-    window.localStorage.setItem('loggedUser', JSON.stringify(response))
-    const fetchedBlogs = await blogService.getAll()
-    setBlogs(fetchedBlogs)
-  }
-  
-  const handleLogout = () => {
-    window.localStorage.removeItem('loggedUser')
-    setUser(null)
-    setBlogs([])
-  }
+    const handleLogin = async (event) => {
+        event.preventDefault()
+        const response = await loginService.login(credentials)
+        setUser(response)
+        setCredentials({
+            username: '',
+            password: ''
+        })
+        window.localStorage.setItem('loggedUser', JSON.stringify(response))
+        blogService.setToken(response.token)
+        const fetchedBlogs = await blogService.getAll()
+        setBlogs(fetchedBlogs)
+    }
 
-  const LoginForm = () => {
+    const handleLogout = () => {
+        window.localStorage.removeItem('loggedUser')
+        setUser(null)
+        setBlogs([])
+    }
+
+    const handleBlogFormChange = (event) => {
+        const value = event.target.value
+        setBlogInfo({
+            ...blogInfo,
+            [event.target.name]: value
+        })
+    }
+
+    const handleBlogSubmit = async (event) => {
+        event.preventDefault()
+        const response = blogService.submitBlog(blogInfo)
+        setBlogInfo({
+            title: '',
+            author: '',
+            url: ''
+        })
+        const fetchedBlogs = await blogService.getAll()
+        setBlogs(fetchedBlogs)
+    }
+
+
+    if (user === null) {
+        return (
+            <div>
+                <LoginForm handleLogin={handleLogin} handleLoginFormChange={handleLoginFormChange} credentials={credentials}/>
+            </div>
+        )
+    }
+
     return (
-    <div>
-      <h2>LOGIN</h2>
-      <br />
-      <form onSubmit={handleLogin}>
-        <div> 
-            name: <input type='text' value={username} onChange={({ target }) => setUsername(target.value)} />
+        <div>
+            Logged in as {user.name ? user.name : user.username}
             <br />
-            password: <input type='password' value={password} onChange={({ target }) => setPassword(target.value)} />
+            <button onClick={handleLogout}>Logout</button>
+            <h2>blogs</h2>
+            {blogs.map(blog =>
+                <Blog key={blog.id} blog={blog} />
+            )}
+            <br />
+            <BlogForm handleBlogSubmit={handleBlogSubmit} handleBlogFormChange={handleBlogFormChange} blogInfo={blogInfo}/>
         </div>
-        <br />
-        <button type='submit'>Login</button>
-      </form>
-    </div>
     )
-  }
-
-  if (user === null) {
-    return (
-      <div>
-        <LoginForm />
-      </div>
-    )
-    }
-
-  return (
-    <div>
-      Logged in as {user.name ? user.name : user.username}
-      <br />
-      <button onClick={handleLogout}>Logout</button>
-      <h2>blogs</h2>
-      {blogs.map(blog =>
-        <Blog key={blog.id} blog={blog} />
-      )}
-    </div>
-  )
 
 }
 
