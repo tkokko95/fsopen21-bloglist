@@ -22,9 +22,7 @@ const App = () => {
     const blogFormRef = useRef()
 
     useEffect(() => {
-        blogService.getAll().then(blogs =>
-            setBlogs(blogs)
-        )
+        updateBlogs()
     }, [])
 
     useEffect(() => {
@@ -44,6 +42,15 @@ const App = () => {
         })
     }
 
+    const updateBlogs = async () => {
+        const updatedBlogs = await blogService.getAll()
+            updatedBlogs.sort((a, b) => {
+                return b.likes - a.likes
+            })
+            setBlogs(updatedBlogs)
+
+    }
+
     const handleLogin = async (event) => {
         event.preventDefault()
         try {
@@ -55,8 +62,7 @@ const App = () => {
             })
             window.localStorage.setItem('loggedUser', JSON.stringify(response))
             blogService.setToken(response.token)
-            const fetchedBlogs = await blogService.getAll()
-            setBlogs(fetchedBlogs)
+            updateBlogs()
         } catch (error) {
             setErrorMessage('Incorrect username or password')
             setTimeout(() => {
@@ -98,7 +104,7 @@ const App = () => {
             <div>
                 <h2>Blogs</h2>
                 {blogs.map(blog =>
-                    <Blog key={blog.id} blog={blog} setBlogs={setBlogs}/>
+                    <Blog key={blog.id} blog={blog} userId={user.id} setBlogs={setBlogs}/>
                 )}
             </div>
             <br />
