@@ -1,11 +1,11 @@
-import React, { useState, useEffect, useRef} from 'react'
+import React, { useState, useEffect, useRef } from 'react'
 import LoginForm from './components/LoginForm'
 import Blog from './components/Blog'
 import BlogForm from './components/BlogForm'
 import Togglable from './components/Togglable'
 import blogService from './services/blogs'
 import loginService from './services/login'
-import {ErrorMessage, Notification} from './components/Notifications'
+import { ErrorMessage, Notification } from './components/Notifications'
 import './App.css'
 
 
@@ -44,10 +44,10 @@ const App = () => {
 
     const updateBlogs = async () => {
         const updatedBlogs = await blogService.getAll()
-            updatedBlogs.sort((a, b) => {
-                return b.likes - a.likes
-            })
-            setBlogs(updatedBlogs)
+        updatedBlogs.sort((a, b) => {
+            return b.likes - a.likes
+        })
+        setBlogs(updatedBlogs)
 
     }
 
@@ -69,7 +69,6 @@ const App = () => {
                 setErrorMessage(null)
             }, 5000)
         }
-        
     }
 
     const handleLogout = () => {
@@ -84,8 +83,8 @@ const App = () => {
                 <ErrorMessage error={errorMessage}/>
                 <Togglable buttonLabel='Log in'>
                     <LoginForm
-                        handleLogin={handleLogin} 
-                        handleLoginFormChange={handleLoginFormChange} 
+                        handleLogin={handleLogin}
+                        handleLoginFormChange={handleLoginFormChange}
                         credentials={credentials}
                     />
                 </Togglable>
@@ -109,11 +108,11 @@ const App = () => {
             </div>
             <br />
             <div>
-                <Togglable buttonLabel='Submit blog' ref={blogFormRef}>
-                    <BlogForm 
-                    setBlogs={setBlogs}
-                    blogFormRef={blogFormRef}
-                    setNotification={setNotification}/>
+                <Togglable ref={blogFormRef} buttonLabel='Submit blog'>
+                    <BlogForm
+                        setBlogs={setBlogs}
+                        blogFormRef={blogFormRef}
+                        setNotification={setNotification}/>
                 </Togglable>
             </div>
         </div>

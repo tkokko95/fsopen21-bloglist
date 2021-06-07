@@ -1,7 +1,7 @@
 import React, { useState } from 'react'
 import blogService from '../services/blogs'
 
-const BlogForm = ({ setBlogs, blogFormRef, setNotification}) => {
+const BlogForm = ({ setBlogs, blogFormRef, setNotification }) => {
     const [blogInfo, setBlogInfo] = useState({
         title: '',
         author: '',
@@ -30,7 +30,8 @@ const BlogForm = ({ setBlogs, blogFormRef, setNotification}) => {
         })
         const fetchedBlogs = await blogService.getAll()
         setBlogs(fetchedBlogs)
-        blogFormRef.current.toggleVisibility()   
+        blogFormRef.current.toggleVisibility()
+        return response
     }
 
     return (
@@ -44,7 +45,7 @@ const BlogForm = ({ setBlogs, blogFormRef, setNotification}) => {
                 <button type='submit'>Submit</button>
             </form>
         </div>
-    )    
+    )
 }
 
 export default BlogForm
