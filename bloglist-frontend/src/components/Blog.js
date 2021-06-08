@@ -23,7 +23,7 @@ const Blog = ({ blog, setBlogs, userId }) => {
     if (!fullInfo){
         return (
             <div>
-                {blog.title} {blog.author} &nbsp;
+                <div className='titleAuthor'>{blog.title} {blog.author}&nbsp;</div>
                 <button onClick={() => setFullInfo(true)}>Show</button>
             </div>
         )
