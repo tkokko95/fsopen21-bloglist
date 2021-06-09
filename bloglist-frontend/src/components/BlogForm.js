@@ -37,10 +37,10 @@ const BlogForm = ({ setBlogs, blogFormRef, setNotification }) => {
     return (
         <div>
             <h3>Submit blog</h3>
-            <form onSubmit={handleBlogSubmit}>
-                Title: <input onChange={handleBlogFormChange} type='text' name='title' value={blogInfo.title} /> <br />
-                Author: <input onChange={handleBlogFormChange} type='text' name='author' value={blogInfo.author}/> <br />
-                Url: <input onChange={handleBlogFormChange} type='text' name='url' value={blogInfo.url}/>
+            <form onSubmit={handleBlogSubmit} className='blogForm'>
+                Title: <input onChange={handleBlogFormChange} type='text' name='title' value={blogInfo.title} className='title'/> <br />
+                Author: <input onChange={handleBlogFormChange} type='text' name='author' value={blogInfo.author} className='author'/> <br />
+                Url: <input onChange={handleBlogFormChange} type='text' name='url' value={blogInfo.url} className='url'/>
                 <br />
                 <button type='submit'>Submit</button>
             </form>

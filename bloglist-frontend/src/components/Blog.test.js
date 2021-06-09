@@ -3,7 +3,7 @@ import '@testing-library/jest-dom/extend-expect'
 import { render, fireEvent } from '@testing-library/react'
 import Blog from './Blog'
 
-const mockHandler =jest.fn()
+const mockHandler = jest.fn()
 
 const testBlog = {
     title: 'Test Blog',
@@ -16,8 +16,6 @@ const testBlog = {
         id: '0123456789'
     }
 }
-
-
 
 
 test('blog is rendered, only title and author shown by default', () => {
@@ -36,4 +34,21 @@ test('everything is shown when button is clicked', () => {
     fireEvent.click(button)
     const infoBox = component.container.querySelector('.blogInfoBox')
     expect(infoBox).toHaveTextContent('Test Blog Test Author test.url Likes: 9001 Like Test User Hide')
+})
+
+test ('like called twice when clicked twice', () => {
+
+    const component = render (
+            <div className='blogInfoBox'>
+                {testBlog.title} <br />
+                {testBlog.author} <br />
+                {testBlog.url} <br />
+                Likes: {testBlog.likes} <button onClick={mockHandler}>Like</button> <br />
+                {testBlog.user.name} <br />
+            </div>
+    )
+    const likeButton = component.getByText('Like')
+    fireEvent.click(likeButton)
+    fireEvent.click(likeButton)
+    expect(mockHandler.mock.calls.length).toBe(2)
 })
