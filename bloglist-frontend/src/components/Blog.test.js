@@ -39,13 +39,13 @@ test('everything is shown when button is clicked', () => {
 test ('like called twice when clicked twice', () => {
 
     const component = render (
-            <div className='blogInfoBox'>
-                {testBlog.title} <br />
-                {testBlog.author} <br />
-                {testBlog.url} <br />
+        <div className='blogInfoBox'>
+            {testBlog.title} <br />
+            {testBlog.author} <br />
+            {testBlog.url} <br />
                 Likes: {testBlog.likes} <button onClick={mockHandler}>Like</button> <br />
-                {testBlog.user.name} <br />
-            </div>
+            {testBlog.user.name} <br />
+        </div>
     )
     const likeButton = component.getByText('Like')
     fireEvent.click(likeButton)

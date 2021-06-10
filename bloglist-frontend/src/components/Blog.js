@@ -14,9 +14,17 @@ const Blog = ({ blog, setBlogs, userId }) => {
 
     const handleDeleteButton = async () => {
         if (window.confirm(`Confirm deletion of: ${blog.title} by ${blog.author}`)) {
+            setFullInfo(false)
             const response = await blogService.deleteBlog(blog.id)
-            window.location.reload()
-            return response
+            setTimeout(async () => {
+                const updatedBlogs = await blogService.getAll()
+                updatedBlogs.sort((a, b) => {
+                    return b.likes - a.likes
+                })
+                console.log(updatedBlogs)
+                setBlogs(updatedBlogs)
+                return response
+            }, 500)
         }
 
     }

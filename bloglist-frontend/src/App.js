@@ -81,7 +81,7 @@ const App = () => {
         return (
             <div>
                 <ErrorMessage error={errorMessage}/>
-                <Togglable buttonLabel='Log in'>
+                <Togglable buttonLabel='Log in' className='loginButton'>
                     <LoginForm
                         handleLogin={handleLogin}
                         handleLoginFormChange={handleLoginFormChange}
