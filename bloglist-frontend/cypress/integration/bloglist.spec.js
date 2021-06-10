@@ -94,9 +94,10 @@ describe('Blog app', function () {
                     Authorization: token
                 }
             })
-            cy.wait(1000)
+            cy.wait(500)
         })
-        it('Blogs can be created, liked and deleted, only creator can delete their posts', async function () {
+
+        it('Blogs can be created, liked and deleted', function () {
             cy.contains('Log in').click()
             cy.get('input:first').type('test')
             cy.get('input:last').type('test')
@@ -106,27 +107,15 @@ describe('Blog app', function () {
             cy.get('.authorField').type('Test author')
             cy.get('.urlField').type('Test URL')
             cy.get('.blogSubmitButton').click()
+            cy.wait(1000)
             cy.contains('Added: Test title by Test author')
             cy.contains('Test title Test author')
             cy.contains('Test title Test author').find('button').click()
             cy.contains('Like').click()
             cy.contains('Likes: 1')
             cy.contains('Delete').click()
-            cy.wait(500)
-            cy.contains('Logout').click()
-            cy.contains('Log in').click()
-            cy.wait(100)
-            cy.get('input:first').type('test2')
-            cy.get('input:last').type('test2')
-            cy.contains('Login').click()
-            cy.contains('Test title').should('not.exist')
-            cy.contains('Show').click()
-            cy.contains('Delete').should('not.exist')
-        })
-
-        it('Blogs are shown by likes, in descending order', async function () {
-            
-
+            cy.wait(1000)
+            cy.contains('Test title Test author').should('not.exist')
         })
     })
 })
